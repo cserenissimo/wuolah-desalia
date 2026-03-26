@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Barceló Desalia – Vive Ahora</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    /* ── FONDO OFICIAL: gradiente Desalia en todo el body ── */
+    body {
+      background: linear-gradient(to bottom, #F7A84E 0%, #ED7B8A 38%, #C480B8 68%, #2DC8B2 100%);
+      background-attachment: fixed;
+      min-height: 100vh;
+      touch-action: none;
+      -webkit-tap-highlight-color: transparent;
+      overflow-x: hidden;
+    }
+
+    /* ── FRANJAS FIJAS top y bottom (Capa_1 (2).png) ── */
+    .stripe-bar {
+      position: fixed;
+      left: 0; right: 0;
+      height: 20px;
+      z-index: 100;
+      background: repeating-linear-gradient(
+        90deg,
+        #F5A14A 0px, #F5A14A 34px,
+        #F0896A 34px, #F0896A 68px,
+        #2DC8B2 68px, #2DC8B2 102px
+      );
+    }
+    .stripe-bar.top    { top: 0; }
+    .stripe-bar.bottom { bottom: 0; }
+
+    /* ── LAYOUT: skin-left | contenido | skin-right ── */
+    .skin-wrap {
+      display: flex;
+      min-height: 100vh;
+      padding-top: 36px;     /* 20px stripe + 16px gap Wuolah */
+      padding-bottom: 20px;
+    }
+
+    /* ─ Columna izquierda ─ */
+    .skin-left {
+      width: 300px;
+      flex-shrink: 0;
+      position: relative;
+    }
+    #cv-left {
+      display: block;
+      position: sticky;
+      top: 0;
+      width: 300px;
+      height: 100vh;
+    }
+
+    /* ─ Contenido Wuolah ─ */
+    .skin-content {
+      flex: 1;
+      background: #fff;
+      min-height: 100vh;
+      box-shadow: -3px 0 18px rgba(0,0,0,.14), 3px 0 18px rgba(0,0,0,.14);
+    }
+    .w-topbar {
+      height: 54px;
+      background: #fff;
+      border-bottom: 1px solid #eee;
+      display: flex; align-items: center; padding: 0 22px; gap: 14px;
+    }
+    .w-topbar .wlogo { font-weight: 800; font-size: 19px; color: #00b4a0; font-family: sans-serif; }
+    .w-topbar .wsearch {
+      flex: 1; max-width: 340px; height: 32px;
+      background: #f5f5f5; border: 1px solid #e0e0e0; border-radius: 16px;
+      padding: 0 14px; font-size: 13px; color: #aaa; line-height: 32px; font-family: sans-serif;
+    }
+    .w-body { padding: 24px 32px; }
+    .w-body h1 { font-size: 18px; font-weight: 700; color: #111; margin-bottom: 5px; font-family: sans-serif; }
+    .w-body .meta { font-size: 12px; color: #888; margin-bottom: 20px; font-family: sans-serif; }
+    .w-body .doc {
+      background: #fff; border: 1px solid #e8e8e8; border-radius: 4px;
+      padding: 32px 40px; min-height: 620px; box-shadow: 0 1px 4px rgba(0,0,0,.06);
+    }
+    .w-body .doc p  { font-size: 13px; line-height: 1.9; color: #333; margin-bottom: 14px; font-family: sans-serif; }
+    .w-body .doc h2 { font-size: 14px; font-weight: 700; color: #111; margin: 22px 0 8px; font-family: sans-serif; }
+
+    /* ─ Columna derecha ─ */
+    .skin-right {
+      width: 300px;
+      flex-shrink: 0;
+      /* solo reserva el espacio en el flex layout */
+    }
+    #cv-right {
+      position: fixed;
+      top: 0; right: 0;
+      width: 300px;
+      height: 100vh;
+      display: block;
+      pointer-events: none;
+      z-index: 1;
+    }
+    /* Banner: posicionado fijo en la columna derecha, independiente del contenido */
+    #banner {
+      position: fixed;
+      top: 36px;   /* 20px franja + 16px gap */
+      right: 0;
+      width: 300px;
+      height: 600px;
+      display: block;
+      cursor: pointer;
+      z-index: 2;
+    }
+
+    /* ── OVERLAYS ── */
+    .fl-overlay {
+      display: none; position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      z-index: 999999;
+      background: rgba(0,0,0,.85);
+      justify-content: center; align-items: center;
+      touch-action: none;
+    }
+    .fl-overlay.open { display: flex; }
+    #skin-canvas, #game { display: block; cursor: pointer; border-radius: 18px; box-shadow: 0 28px 90px rgba(0,0,0,.75); }
+
+    .xbtn {
+      position: fixed; top: 28px; right: 22px; z-index: 1000000;
+      width: 44px; height: 44px; background: rgba(0,0,0,.65); color: white;
+      border: 2px solid rgba(255,255,255,.5); border-radius: 50%;
+      font-size: 20px; font-weight: bold; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-family: monospace; transition: background .2s;
+    }
+    .xbtn:hover { background: rgba(220,0,0,.85); }
+  </style>
+</head>
+<body>
+
+<div class="stripe-bar top"></div>
+<div class="stripe-bar bottom"></div>
+
+<div class="skin-wrap">
+
+  <!-- ─ IZQUIERDA: creativo Desalia ─ -->
+  <div class="skin-left">
+    <canvas id="cv-left" width="300"></canvas>
+  </div>
+
+  <!-- ─ CONTENIDO WUOLAH ─ -->
+  <div class="skin-content">
+    <div class="w-topbar">
+      <div class="wlogo">wuolah</div>
+      <div class="wsearch">Busca apuntes, exámenes…</div>
+    </div>
+    <div class="w-body">
+      <h1>Economía de la Empresa – Tema 4: Producción y Costes</h1>
+      <div class="meta">Universidad de Sevilla · Subido por María G. · ★ 4.8 (312 valoraciones)</div>
+      <div class="doc">
+        <h2>1. La función de producción</h2>
+        <p>La función de producción relaciona la cantidad máxima de output que puede obtenerse a partir de unas cantidades dadas de inputs. Formalmente se expresa como Q = f(K, L), donde K representa el capital y L el trabajo.</p>
+        <p>En el corto plazo al menos un factor productivo es fijo. El factor variable típico es el trabajo. La ley de los rendimientos decrecientes establece que, a partir de cierto punto, añadir unidades adicionales del factor variable reduce el producto marginal.</p>
+        <h2>2. Costes en el corto plazo</h2>
+        <p>Los costes totales se dividen en costes fijos (CF) y costes variables (CV). El coste total es CT = CF + CV. El coste medio total es CMe = CT / Q. El coste marginal (CMg) mide el incremento en el coste total al producir una unidad adicional.</p>
+        <p>La relación entre el coste marginal y el coste medio es fundamental: cuando CMg &lt; CMe, el coste medio decrece; cuando CMg &gt; CMe, el coste medio aumenta. El mínimo del coste medio se alcanza en el punto donde CMg = CMe.</p>
+        <h2>3. Economías de escala</h2>
+        <p>En el largo plazo todos los factores son variables. Se habla de economías de escala cuando un aumento proporcional de todos los inputs genera un aumento más que proporcional en el output. Las deseconomías de escala ocurren en sentido contrario.</p>
+        <h2>4. Curvas de coste en el largo plazo</h2>
+        <p>La curva de coste medio a largo plazo (CMe LP) es la envolvente de las curvas de coste medio a corto plazo. Muestra el mínimo coste al que puede producirse cada nivel de output cuando todos los factores son variables y la empresa puede elegir el tamaño óptimo de planta.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─ DERECHA: reserva de espacio en el flex + elementos fixed independientes ─ -->
+  <div class="skin-right"></div>
+  <canvas id="cv-right" width="300"></canvas>
+  <canvas id="banner" width="300" height="600"></canvas>
+
+</div>
+
+<!-- ── OVERLAY: selector de personaje ── -->
+<div id="skin-overlay" class="fl-overlay">
+  <canvas id="skin-canvas" width="960" height="540"></canvas>
+  <button class="xbtn" id="skin-xbtn">✕</button>
+</div>
+
+<!-- ── OVERLAY: juego ── -->
+<div id="game-overlay" class="fl-overlay">
+  <canvas id="game" width="960" height="540"></canvas>
+  <button class="xbtn" id="game-xbtn">✕</button>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  const PIXEL = "'Press Start 2P', 'Courier New', monospace";
+
+  // ── ASSETS ─────────────────────────────────────────────────────────
+  const IMG = {};
+  const ASSET_MAP = {
+    logo:     'materiales/Material/Group 3.png',
+    bgPalm:   'materiales/Material/Vector (4).png',   // palma grande silhouette
+    pixPalm:  'materiales/Material/Vector (3).png',   // palma pixel art morada
+    sand:     'materiales/Material/Vector (1).png',   // suelo arena
+    ramp:     'materiales/Material/Group 1.png',
+    flamingo: 'materiales/Material/flamenco 4.png',
+    palmObs:  'materiales/Material/plamera 1.png',
+    copa:     'materiales/Material/copa 1.png',
+    bottle:   'materiales/Material/Vector.png',
+    sign:     'materiales/Material/vive ahora señal.png',
+    suitcase: 'materiales/Material/maleta 3 1.png',
+    duck0:    'materiales/Material/pato.png',
+    duck1:    'materiales/Material/pato pixel art 2 1.png',
+    duck2:    'materiales/Material/pato pixel art 7 1.png',
+    duck3:    'materiales/Material/pato pixel art 6 1.png',
+    duck4:    'materiales/Material/pato pixel art 5 1.png',
+  };
+  let assetsLoaded = 0;
+  const assetsTotal = Object.keys(ASSET_MAP).length;
+  Object.entries(ASSET_MAP).forEach(([k,src]) => {
+    const im = new Image();
+    im.onload = im.onerror = () => assetsLoaded++;
+    im.src = src; IMG[k] = im;
+  });
+
+  // Colores de marca
+  const BRAND = ['#F5A14A','#F0896A','#E96880','#D07AC0','#9B72C5','#5BA8E8','#2DC8B2'];
+  // Nivel del suelo: 72% de la altura del viewport (MISMO en ambas columnas = continuidad)
+  const GROUND_RATIO = 0.72;
+  const WATER_RATIO  = 0.84;
+
+  // helper: imagen
+  function di(ctx, k, x, y, w, h) {
+    const im = IMG[k]; if (im && im.naturalWidth) ctx.drawImage(im, x, y, w, h);
+  }
+  // helper: rounded rect path
+  function rr(ctx, x, y, w, h, r) {
+    ctx.beginPath(); ctx.moveTo(x+r, y);
+    ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
+    ctx.arcTo(x,y+h,x,y,r);     ctx.arcTo(x,y,x+w,y,r);
+    ctx.closePath();
+  }
+
+  // ════════════════════════════════════════════════════════════════════
+  //  COLUMNA IZQUIERDA  — escena izquierda de la playa
+  // ════════════════════════════════════════════════════════════════════
+  const cvL  = document.getElementById('cv-left');
+  const ctxL = cvL.getContext('2d');
+  let lBob = 0;
+
+  function resizeLeft() {
+    const h = window.innerHeight;
+    cvL.height = h; cvL.style.height = h + 'px';
+  }
+
+  function drawLeft() {
+    lBob += 0.022;
+    const W = 300, H = cvL.height;
+    const GY = Math.round(H * GROUND_RATIO);   // nivel del suelo
+    const WY = Math.round(H * WATER_RATIO);    // nivel del agua
+
+    ctxL.clearRect(0, 0, W, H);
+
+    // ── Palma grande silhouette en el borde izquierdo
+    di(ctxL, 'bgPalm', -35, GY - H * 0.68, 190, H * 0.70);
+
+    // ── Palmera pixel art morada (interior, apunta hacia el contenido)
+    const pp = IMG.pixPalm;
+    if (pp && pp.naturalWidth) {
+      const ph = Math.round(H * 0.40);
+      const pw = Math.round(ph * pp.naturalWidth / pp.naturalHeight);
+      ctxL.drawImage(pp, W - pw + 18, GY - ph + 8, pw, ph);
+    }
+
+    // ── Logo Barceló Desalia — zona reservada: y 20→105
+    const li = IMG.logo;
+    if (li && li.naturalWidth) {
+      const lw = 196, lh = Math.round(lw * li.naturalHeight / li.naturalWidth);
+      const ly = Math.round(20 + (85 - lh) / 2);
+      ctxL.drawImage(li, Math.round(W/2 - lw/2), Math.max(20, ly), lw, lh);
+    }
+
+    // ── Suelo de arena (Vector 1 — forma orgánica)
+    di(ctxL, 'sand', -10, GY - 14, W + 20, Math.round(H * 0.10));
+
+    // ── Relleno de arena sólida debajo
+    ctxL.fillStyle = '#F2C19E';
+    ctxL.fillRect(0, GY + Math.round(H * 0.04), W, WY - GY);
+
+    // ── Agua teal
+    ctxL.fillStyle = '#2DC8B2';
+    ctxL.fillRect(0, WY, W, H - WY - 20); // -20 = deja espacio franja inferior
+
+    // ── Señal VIVE AHORA en el suelo (a la izquierda)
+    const sg = IMG.sign;
+    if (sg && sg.naturalWidth) {
+      const sh = 90, sw = Math.round(sh * sg.naturalWidth / sg.naturalHeight);
+      ctxL.drawImage(sg, 22, GY - sh + 4, sw, sh);
+    }
+
+    // ── Maleta DESALIA (abajo centro-derecha)
+    const su = IMG.suitcase;
+    if (su && su.naturalWidth) {
+      const sh2 = 72, sw2 = Math.round(sh2 * su.naturalWidth / su.naturalHeight);
+      ctxL.drawImage(su, Math.round(W/2 + 14), GY - sh2 + 2, sw2, sh2);
+    }
+
+    // ── Pato animado (abajo derecha, junto al borde del contenido)
+    const dy = Math.sin(lBob) * 6;
+    const dk = IMG.duck0;
+    if (dk && dk.naturalWidth) {
+      ctxL.drawImage(dk, W - 88, GY - 82 + dy, 80, 80);
+    }
+
+    // ── Franjas top/bottom (20px cada una — ya cubierto por stripe-bar div pero las
+    //    repetimos en el canvas para que el sticky no deje huecos)
+    const SH = 20;
+    for (let i = 0; i * 34 < W + 34; i++) {
+      const c = i % 3;
+      ctxL.fillStyle = c===0?'#F5A14A':c===1?'#F0896A':'#2DC8B2';
+      ctxL.fillRect(i*34, 0, 34, SH);
+      ctxL.fillRect(i*34, H-SH, 34, SH);
+    }
+  }
+
+  // ════════════════════════════════════════════════════════════════════
+  //  COLUMNA DERECHA  — escena derecha de la playa (espejo)
+  // ════════════════════════════════════════════════════════════════════
+  const cvR  = document.getElementById('cv-right');
+  const ctxR = cvR.getContext('2d');
+
+  function resizeRight() {
+    const h = window.innerHeight;
+    cvR.height = h;
+  }
+
+  function drawRight() {
+    const W = 300, H = cvR.height;
+    const GY = Math.round(H * GROUND_RATIO);
+    const WY = Math.round(H * WATER_RATIO);
+
+    ctxR.clearRect(0, 0, W, H);
+
+    // ── Palma grande silhouette en borde derecho (espejo horizontal)
+    const bp = IMG.bgPalm;
+    if (bp && bp.naturalWidth) {
+      ctxR.save(); ctxR.scale(-1, 1);
+      ctxR.drawImage(bp, -W - 35 + 190, GY - H*0.68, 190, H*0.70);
+      ctxR.restore();
+    }
+
+    // ── Palmera pixel art morada (interior, apunta hacia el contenido = izquierda)
+    const pp = IMG.pixPalm;
+    if (pp && pp.naturalWidth) {
+      const ph = Math.round(H * 0.40);
+      const pw = Math.round(ph * pp.naturalWidth / pp.naturalHeight);
+      ctxR.save(); ctxR.scale(-1, 1);
+      ctxR.drawImage(pp, -(pw - 18), GY - ph + 8, pw, ph);
+      ctxR.restore();
+    }
+
+    // ── Suelo de arena (espejo)
+    if (IMG.sand && IMG.sand.naturalWidth) {
+      ctxR.save(); ctxR.scale(-1, 1);
+      ctxR.drawImage(IMG.sand, -W - 10, GY - 14, W + 20, Math.round(H * 0.10));
+      ctxR.restore();
+    }
+
+    // ── Relleno arena y agua
+    ctxR.fillStyle = '#F2C19E';
+    ctxR.fillRect(0, GY + Math.round(H * 0.04), W, WY - GY);
+    ctxR.fillStyle = '#2DC8B2';
+    ctxR.fillRect(0, WY, W, H - WY - 20);
+
+    // ── Franjas
+    const SH = 20;
+    for (let i = 0; i * 34 < W + 34; i++) {
+      const c = i % 3;
+      ctxR.fillStyle = c===0?'#F5A14A':c===1?'#F0896A':'#2DC8B2';
+      ctxR.fillRect(i*34, 0, 34, SH);
+      ctxR.fillRect(i*34, H-SH, 34, SH);
+    }
+  }
+
+  // ════════════════════════════════════════════════════════════════════
+  //  BANNER 300×600  — card flotante en columna derecha
+  // ════════════════════════════════════════════════════════════════════
+  const BW = 300, BH = 600;
+  const bEl  = document.getElementById('banner');
+  const bCtx = bEl.getContext('2d');
+  let bBob = 0, bSkin = 0;
+
+  function drawBanner() {
+    bBob += 0.05;
+    bCtx.clearRect(0, 0, BW, BH);
+
+    // ── Fondo blanco con gradiente sutil (card limpia)
+    const bg = bCtx.createLinearGradient(0, 0, 0, BH);
+    bg.addColorStop(0,   'rgba(255,252,245,1)');
+    bg.addColorStop(.55, 'rgba(255,245,238,1)');
+    bg.addColorStop(1,   'rgba(220,248,245,1)');
+    bCtx.fillStyle = bg;
+    bCtx.fillRect(0, 0, BW, BH);
+
+    // ── Franja de color arriba (marca)
+    const SH = 12;
+    for (let i = 0; i * 34 < BW + 34; i++) {
+      const c = i % 3;
+      bCtx.fillStyle = c===0?'#F5A14A':c===1?'#F0896A':'#2DC8B2';
+      bCtx.fillRect(i*34, 0, 34, SH);
+    }
+
+    // ── Logo (y 20→96)
+    const li = IMG.logo;
+    if (li && li.naturalWidth) {
+      const lw = 200, lh = Math.round(lw * li.naturalHeight / li.naturalWidth);
+      bCtx.drawImage(li, Math.round(BW/2 - lw/2), Math.round(SH + 4 + (76 - lh)/2), lw, lh);
+    }
+
+    // ── Separador fino
+    bCtx.fillStyle = 'rgba(0,0,0,.08)'; bCtx.fillRect(20, 98, BW-40, 1);
+
+    // ── Subtítulo
+    bCtx.save();
+    bCtx.textAlign = 'center';
+    bCtx.font = `7px ${PIXEL}`;
+    bCtx.fillStyle = '#888';
+    bCtx.fillText('¡EL FESTIVAL DEL VERANO!', BW/2, 116);
+    bCtx.restore();
+
+    // ── Fondo de escena (arena + agua) — zona media del banner
+    bCtx.fillStyle = '#F7A84E'; // cielo degradado mini
+    const miniSky = bCtx.createLinearGradient(0, 126, 0, 360);
+    miniSky.addColorStop(0, '#F7A84E'); miniSky.addColorStop(.5, '#ED7B8A'); miniSky.addColorStop(1, '#C480B8');
+    bCtx.fillStyle = miniSky; bCtx.fillRect(0, 126, BW, 234);
+    bCtx.fillStyle = '#F2C19E'; bCtx.fillRect(0, 344, BW, 38);
+    bCtx.fillStyle = '#2DC8B2'; bCtx.fillRect(0, 382, BW, 28);
+
+    // Palmas mini en el fondo de escena
+    di(bCtx, 'bgPalm', -14, 126, 100, 230);
+    bCtx.save(); bCtx.scale(-1,1); di(bCtx, 'bgPalm', -BW-14, 126, 100, 230); bCtx.restore();
+
+    // ── Duck grande animado (sobre la escena)
+    const dy = Math.sin(bBob) * 7;
+    const dSz = 148;
+    di(bCtx, 'duck'+bSkin, Math.round(BW/2 - dSz/2), Math.round(200 + dy), dSz, dSz);
+
+    // ── CTA principal
+    const bw = 248, bh = 50, bx = Math.round(BW/2 - bw/2), by = 424;
+    bCtx.save();
+    const g2 = bCtx.createLinearGradient(bx, by, bx, by+bh);
+    g2.addColorStop(0, '#FF6B35'); g2.addColorStop(1, '#E91E8C');
+    bCtx.fillStyle = g2;
+    bCtx.shadowColor = 'rgba(233,30,140,.4)'; bCtx.shadowBlur = 16;
+    rr(bCtx, bx, by, bw, bh, 25); bCtx.fill();
+    bCtx.fillStyle = 'white'; bCtx.font = `10px ${PIXEL}`;
+    bCtx.textAlign = 'center'; bCtx.shadowBlur = 0;
+    bCtx.fillText('▶  JUGAR AHORA', BW/2, by + 32);
+    bCtx.restore();
+
+    // ── Tagline
+    bCtx.save();
+    bCtx.textAlign = 'center'; bCtx.fillStyle = '#aaa';
+    bCtx.font = `6px ${PIXEL}`;
+    bCtx.fillText('PULSA PARA ELEGIR TU PATO', BW/2, 492);
+    bCtx.restore();
+
+    // ── Maleta decorativa pequeña
+    const su = IMG.suitcase;
+    if (su && su.naturalWidth) {
+      const sh = 48, sw = Math.round(sh * su.naturalWidth / su.naturalHeight);
+      bCtx.drawImage(su, 14, by - sh - 2, sw, sh);
+    }
+
+    // ── Franja de color abajo
+    for (let i = 0; i * 34 < BW + 34; i++) {
+      const c = (i+1) % 3;
+      bCtx.fillStyle = c===0?'#F5A14A':c===1?'#F0896A':'#2DC8B2';
+      bCtx.fillRect(i*34, BH-12, 34, 12);
+    }
+
+    if (assetsLoaded < assetsTotal) {
+      bCtx.save(); bCtx.fillStyle='rgba(255,255,255,.7)'; bCtx.fillRect(0,0,BW,BH);
+      bCtx.fillStyle='#333'; bCtx.font=`8px ${PIXEL}`; bCtx.textAlign='center';
+      bCtx.fillText('CARGANDO...', BW/2, BH/2); bCtx.restore();
+    }
+  }
+
+  bEl.addEventListener('click',      () => { if(assetsLoaded>=assetsTotal) openSkin(); });
+  bEl.addEventListener('touchstart', e => { e.preventDefault(); if(assetsLoaded>=assetsTotal) openSkin(); }, {passive:false});
+
+  // ════════════════════════════════════════════════════════════════════
+  //  SKIN SELECTOR OVERLAY  (960×540)
+  // ════════════════════════════════════════════════════════════════════
+  const SW=960, SH=540;
+  const skEl  = document.getElementById('skin-canvas');
+  const skCtx = skEl.getContext('2d');
+  const skOv  = document.getElementById('skin-overlay');
+  let chosenSkin = 0;
+
+  const SK_SZ=120, SK_GAP=22;
+  const SK_ROW_W = 5*SK_SZ + 4*SK_GAP;
+  const SK_ROW_X = (SW-SK_ROW_W)/2;
+  const SK_ROW_Y = SH/2 - SK_SZ/2 + 14;
+
+  function skDuckRect(i){ return {x: SK_ROW_X + i*(SK_SZ+SK_GAP), y: SK_ROW_Y}; }
+
+  function srr(x,y,w,h,r){
+    skCtx.beginPath(); skCtx.moveTo(x+r,y);
+    skCtx.arcTo(x+w,y,x+w,y+h,r); skCtx.arcTo(x+w,y+h,x,y+h,r);
+    skCtx.arcTo(x,y+h,x,y,r);     skCtx.arcTo(x,y,x+w,y,r);
+    skCtx.closePath();
+  }
+
+  function drawSkinScreen() {
+    // Fondo con gradiente del fondo oficial
+    const og = skCtx.createLinearGradient(0,0,0,SH);
+    og.addColorStop(0,'#F7A84E'); og.addColorStop(.4,'#ED7B8A');
+    og.addColorStop(.7,'#C480B8'); og.addColorStop(1,'#2DC8B2');
+    skCtx.fillStyle=og; skCtx.fillRect(0,0,SW,SH);
+
+    // Franjas
+    for(let i=0;i*34<SW+34;i++){
+      const c=i%3; skCtx.fillStyle=c===0?'#F5A14A':c===1?'#F0896A':'#2DC8B2';
+      skCtx.fillRect(i*34,0,34,16); skCtx.fillRect(i*34,SH-16,34,16);
+    }
+
+    // Palmas decorativas laterales
+    di(skCtx,'bgPalm',-40,60,200,SH*0.75);
+    skCtx.save(); skCtx.scale(-1,1); di(skCtx,'bgPalm',-SW-40,60,200,SH*0.75); skCtx.restore();
+
+    // Pixel palms interiores
+    const pp=IMG.pixPalm;
+    if(pp&&pp.naturalWidth){
+      const ph=Math.round(SH*0.45), pw=Math.round(ph*pp.naturalWidth/pp.naturalHeight);
+      skCtx.drawImage(pp,260,SH*0.3,pw,ph);
+      skCtx.save(); skCtx.scale(-1,1); skCtx.drawImage(pp,-SW+260-pw+pp.naturalWidth*0.01,SH*0.3,pw,ph); skCtx.restore();
+    }
+
+    // Suelo de arena
+    di(skCtx,'sand',0,SH-72,SW,52);
+    skCtx.fillStyle='#2DC8B2'; skCtx.fillRect(0,SH-26,SW,10);
+
+    // Logo
+    const li=IMG.logo;
+    if(li&&li.naturalWidth){const lw=220,lh=lw*li.naturalHeight/li.naturalWidth; skCtx.drawImage(li,SW/2-lw/2,20,lw,lh);}
+
+    // Título
+    skCtx.save(); skCtx.textAlign='center'; skCtx.fillStyle='white';
+    skCtx.font=`12px ${PIXEL}`; skCtx.shadowColor='rgba(0,0,0,.65)'; skCtx.shadowBlur=8;
+    skCtx.fillText('ELIGE TU PATO', SW/2, SK_ROW_Y-30); skCtx.restore();
+
+    // Ducks
+    for(let i=0;i<5;i++){
+      const d=skDuckRect(i), sel=chosenSkin===i;
+      const sz=sel?SK_SZ+16:SK_SZ, ox=sel?-8:0, oy=sel?-8:0;
+      if(sel){
+        skCtx.save(); skCtx.shadowColor='#FFD700'; skCtx.shadowBlur=28;
+        skCtx.fillStyle='rgba(255,255,255,.32)';
+        srr(d.x+ox-8,d.y+oy-8,sz+16,sz+16,16); skCtx.fill();
+        skCtx.strokeStyle='#FFD700'; skCtx.lineWidth=3; skCtx.stroke();
+        skCtx.restore();
+      } else {
+        skCtx.save(); skCtx.fillStyle='rgba(0,0,0,.18)';
+        srr(d.x-4,d.y-4,SK_SZ+8,SK_SZ+8,12); skCtx.fill(); skCtx.restore();
+      }
+      di(skCtx,'duck'+i,d.x+ox,d.y+oy,sz,sz);
+      skCtx.save(); skCtx.textAlign='center';
+      skCtx.fillStyle=sel?'#FFD700':'rgba(255,255,255,.7)';
+      skCtx.font=`6px ${PIXEL}`; skCtx.fillText('PATO '+(i+1),d.x+SK_SZ/2,d.y+SK_SZ+15);
+      skCtx.restore();
+    }
+
+    // Botón START
+    const bw=280,bh=52,bx=SW/2-bw/2,by=SK_ROW_Y+SK_SZ+44;
+    skCtx.save();
+    const g2=skCtx.createLinearGradient(bx,by,bx,by+bh);
+    g2.addColorStop(0,'#FF6B35'); g2.addColorStop(1,'#E91E8C');
+    skCtx.fillStyle=g2; skCtx.shadowColor='rgba(233,30,140,.5)'; skCtx.shadowBlur=20;
+    srr(bx,by,bw,bh,26); skCtx.fill();
+    skCtx.fillStyle='white'; skCtx.font=`13px ${PIXEL}`;
+    skCtx.textAlign='center'; skCtx.shadowBlur=0;
+    skCtx.fillText('▶  START GAME', SW/2, by+34); skCtx.restore();
+  }
+
+  function skinTap(ex,ey){
+    const rect=skEl.getBoundingClientRect();
+    const x=(ex-rect.left)*(SW/rect.width), y=(ey-rect.top)*(SH/rect.height);
+    for(let i=0;i<5;i++){
+      const d=skDuckRect(i);
+      if(x>=d.x-10&&x<=d.x+SK_SZ+10&&y>=d.y-10&&y<=d.y+SK_SZ+10){chosenSkin=i;return;}
+    }
+    const bw=280,bh=52,bx=SW/2-bw/2,by=SK_ROW_Y+SK_SZ+44;
+    if(x>=bx&&x<=bx+bw&&y>=by&&y<=by+bh) openGame(chosenSkin);
+  }
+  skEl.addEventListener('click',      e=>skinTap(e.clientX,e.clientY));
+  skEl.addEventListener('touchstart', e=>{e.preventDefault();skinTap(e.touches[0].clientX,e.touches[0].clientY);},{passive:false});
+
+  let skinLoopActive=false;
+  function skinLoop(){
+    if(!skOv.classList.contains('open')){skinLoopActive=false;return;}
+    skCtx.clearRect(0,0,SW,SH); drawSkinScreen(); requestAnimationFrame(skinLoop);
+  }
+  function openSkin(){
+    skOv.classList.add('open'); resizeCanvas(skEl);
+    if(!skinLoopActive){skinLoopActive=true;skinLoop();}
+  }
+  function closeSkin(){ skOv.classList.remove('open'); }
+  document.getElementById('skin-xbtn').addEventListener('click',closeSkin);
+  document.getElementById('skin-xbtn').addEventListener('touchstart',e=>{e.preventDefault();closeSkin();},{passive:false});
+
+  // ════════════════════════════════════════════════════════════════════
+  //  GAME OVERLAY  (960×540)
+  // ════════════════════════════════════════════════════════════════════
+  const GW=960,GH=540;
+  const PX=82,PY=20,PW=796,PH=500,PR=22;
+  const GROUND_Y=PY+355,WATER_Y=PY+435;
+  const DUCK_W=72,DUCK_H=72,DUCK_X=PX+160;
+  const DUCK_GY=GROUND_Y-DUCK_H/2;
+  const GRAVITY=0.65,JUMP_V=-15.5,BASE_SPD=5,ENERGY_MAX=10;
+  const STRIPE_COLS=['#F5A14A','#F0896A','#E96880','#D07AC0','#9B72C5','#5BA8E8','#2DC8B2','#50D4A0'];
+
+  const BG_PALMS=[{bx:60,s:.85},{bx:210,s:1.1},{bx:370,s:.65},{bx:520,s:.95},{bx:670,s:.75},{bx:820,s:1.05},{bx:980,s:.80},{bx:1150,s:.90}];
+  const OUTER_PALMS=[{x:-28,y:PY-10,w:138,h:440},{x:GW-110,y:PY-10,w:138,h:440}];
+  const OB_DEF={
+    ramp:    {kind:'ramp',    w:175,h:140,hx:28,collect:false},
+    flamingo:{kind:'flamingo',w:88, h:75, hx:6, collect:false},
+    palmObs: {kind:'palmObs', w:58, h:100,hx:5, collect:false},
+    copa:    {kind:'copa',    w:44, h:62, hx:0, collect:true },
+    bottle:  {kind:'bottle',  w:34, h:80, hx:0, collect:true },
+  };
+  const SPAWN_TBL=['ramp','ramp','ramp','ramp','flamingo','flamingo','flamingo','palmObs','palmObs','copa','copa','copa','bottle'];
+  const SIGN_POS=[300,820,1340];
+
+  const gEl=document.getElementById('game');
+  const gCtx=gEl.getContext('2d');
+  const gOv=document.getElementById('game-overlay');
+  let gameSkin=0,gameActive=false;
+  let duck={},obstacles=[],particles=[];
+  let score=0,best=0,spd=BASE_SPD,frame=0,energy=ENERGY_MAX,bgOff=0;
+
+  function gdi(k,x,y,w,h){const im=IMG[k];if(im&&im.naturalWidth)gCtx.drawImage(im,x,y,w,h);}
+  function grr(x,y,w,h,r){gCtx.beginPath();gCtx.moveTo(x+r,y);gCtx.arcTo(x+w,y,x+w,y+h,r);gCtx.arcTo(x+w,y+h,x,y+h,r);gCtx.arcTo(x,y+h,x,y,r);gCtx.arcTo(x,y,x+w,y,r);gCtx.closePath();}
+  function resetDuck(){duck={y:DUCK_GY,vy:0,jumps:0,bob:0,hurt:0};}
+  function resetGame(sk){gameSkin=sk;resetDuck();obstacles=[];particles=[];score=0;spd=BASE_SPD;frame=0;energy=ENERGY_MAX;bgOff=0;}
+  function spawnOb(){const key=SPAWN_TBL[Math.floor(Math.random()*SPAWN_TBL.length)];const d=OB_DEF[key];obstacles.push({...d,x:GW+40,y:GROUND_Y-d.h,done:false});}
+  function burst(x,y,col){for(let i=0;i<8;i++){const a=(Math.PI*2*i)/8;particles.push({x,y,vx:Math.cos(a)*(2+Math.random()*3),vy:Math.sin(a)*(2+Math.random()*3)-2,life:42,color:col,r:3+Math.random()*3});}}
+
+  function update(){
+    frame++;bgOff+=spd;
+    duck.vy+=GRAVITY;duck.y+=duck.vy;
+    if(duck.y>=DUCK_GY){duck.y=DUCK_GY;duck.vy=0;duck.jumps=0;}
+    duck.bob+=0.13;if(duck.hurt>0)duck.hurt--;
+    if(frame%450===0)spd=Math.min(spd+0.3,9);
+    if(frame%6===0)score++;
+    if(frame%75===0&&energy>0)energy--;
+    if(energy<=0){if(score>best)best=score;gameActive=false;return;}
+    const pixGap=Math.max(320,450-(spd-BASE_SPD)*17);
+    const interval=Math.max(42,Math.floor(pixGap/spd));
+    if(frame%interval===0)spawnOb();
+    for(const ob of obstacles)ob.x-=spd;
+    const m=9,dL=DUCK_X-DUCK_W/2+m,dR=DUCK_X+DUCK_W/2-m,dT=duck.y-DUCK_H/2+m,dB=duck.y+DUCK_H/2-m;
+    for(const ob of obstacles){
+      if(ob.done)continue;
+      const hm=ob.hx+m,hit=dR>ob.x+hm&&dL<ob.x+ob.w-hm&&dB>ob.y+m&&dT<ob.y+ob.h-m;
+      if(!hit)continue;
+      if(ob.collect){
+        ob.done=true;
+        if(ob.kind==='copa'){score+=5;energy=Math.min(ENERGY_MAX,energy+1);burst(ob.x+ob.w/2,ob.y+ob.h/2,'#E91E8C');}
+        if(ob.kind==='bottle'){score+=12;energy=Math.min(ENERGY_MAX,energy+2);burst(ob.x+ob.w/2,ob.y+ob.h/2,'#FF9800');}
+      } else if(duck.hurt===0){
+        ob.done=true;duck.hurt=70;energy=Math.max(0,energy-3);
+        burst(ob.x+ob.w/2,ob.y+ob.h/2,'#FF4444');
+        if(energy<=0){if(score>best)best=score;gameActive=false;return;}
+      }
+    }
+    obstacles=obstacles.filter(ob=>!ob.done&&ob.x>-220);
+    for(const p of particles){p.x+=p.vx;p.y+=p.vy;p.vy+=0.14;p.life--;}
+    particles=particles.filter(p=>p.life>0);
+  }
+
+  function drawOuterFrame(){
+    const og=gCtx.createLinearGradient(0,0,0,GH);
+    og.addColorStop(0,'#F5A14A');og.addColorStop(.5,'#E0709A');og.addColorStop(1,'#8B5FBF');
+    gCtx.fillStyle=og;gCtx.fillRect(0,0,GW,GH);
+    for(const p of OUTER_PALMS)gdi('bgPalm',p.x,p.y,p.w,p.h);
+    for(let i=0;i*40<GW;i++){
+      gCtx.fillStyle=STRIPE_COLS[i%STRIPE_COLS.length];
+      gCtx.fillRect(i*40,0,40,16);gCtx.fillRect(i*40,GH-16,40,16);
+    }
+  }
+  function drawScene(off){
+    const sky=gCtx.createLinearGradient(PX,PY,PX,PY+260);
+    sky.addColorStop(0,'#F7A84E');sky.addColorStop(.5,'#ED7B8A');sky.addColorStop(1,'#C480B8');
+    gCtx.fillStyle=sky;gCtx.fillRect(PX,PY,PW,GROUND_Y-PY);
+    const wrapBg=PW+220;
+    for(const p of BG_PALMS){const x=PX+((p.bx-off*.18)%wrapBg+wrapBg)%wrapBg-40;gdi('bgPalm',x,GROUND_Y-Math.round(200*p.s),Math.round(64*p.s),Math.round(200*p.s));}
+    const bx2=PX+((80-off*.08)%(PW+600)+(PW+600))%(PW+600)-20;
+    if(bx2>PX-130&&bx2<PX+PW+10){
+      gCtx.fillStyle='#C04E22';gCtx.fillRect(bx2,GROUND_Y-148,115,148);
+      gCtx.fillStyle='#A83E18';gCtx.fillRect(bx2,GROUND_Y-160,115,14);
+      gCtx.fillStyle='rgba(255,215,90,.62)';
+      for(let row=0;row<3;row++)for(let col=0;col<3;col++)gCtx.fillRect(bx2+4+col*32,GROUND_Y-134+row*42,20,26);
+    }
+    const hOff=(off*.10)%(PW+500);
+    for(let tile=-1;tile<2;tile++){
+      const hx=PX+tile*(PW+300)-hOff;if(hx+PW+300<PX||hx>PX+PW)continue;
+      gCtx.save();gCtx.beginPath();gCtx.moveTo(hx+160,GROUND_Y);
+      gCtx.bezierCurveTo(hx+260,GROUND_Y,hx+300,GROUND_Y-108,hx+400,GROUND_Y-108);
+      gCtx.bezierCurveTo(hx+500,GROUND_Y-108,hx+540,GROUND_Y,hx+640,GROUND_Y);
+      gCtx.lineTo(hx+PW+300,GROUND_Y);gCtx.lineTo(hx+PW+300,WATER_Y);gCtx.lineTo(hx-20,WATER_Y);gCtx.lineTo(hx-20,GROUND_Y);
+      gCtx.closePath();gCtx.fillStyle='#F2C19E';gCtx.fill();gCtx.restore();
+    }
+    const sg=gCtx.createLinearGradient(0,GROUND_Y,0,WATER_Y);
+    sg.addColorStop(0,'#F2C19E');sg.addColorStop(1,'#E5B08A');
+    gCtx.fillStyle=sg;gCtx.fillRect(PX,GROUND_Y,PW,WATER_Y-GROUND_Y);
+    gCtx.fillStyle='rgba(0,0,0,.08)';gCtx.fillRect(PX,GROUND_Y,PW,6);
+    const wg=gCtx.createLinearGradient(0,WATER_Y,0,PY+PH);
+    wg.addColorStop(0,'#2DC8B2');wg.addColorStop(1,'#1AA898');
+    gCtx.fillStyle=wg;gCtx.fillRect(PX,WATER_Y,PW,PY+PH-WATER_Y);
+    gCtx.fillStyle='#22B5A0';gCtx.fillRect(PX,WATER_Y,PW,5);
+    const wrapS=PW+600;
+    for(const sp of SIGN_POS){const sx=PX+((sp-off*.45)%wrapS+wrapS)%wrapS;if(sx>PX-80&&sx<PX+PW+10)gdi('sign',sx-34,GROUND_Y-82,68,82);}
+  }
+  function drawObjects(){for(const ob of obstacles){if(!ob.done)gdi(ob.kind,ob.x,ob.y,ob.w,ob.h);}}
+  function drawParticles(){for(const p of particles){gCtx.save();gCtx.globalAlpha=p.life/42;gCtx.fillStyle=p.color;gCtx.beginPath();gCtx.arc(p.x,p.y,p.r,0,Math.PI*2);gCtx.fill();gCtx.restore();}}
+  function drawDuck(){
+    const bob=duck.y>=DUCK_GY-1?Math.sin(duck.bob)*2:0,lean=duck.vy<-4?-0.13:duck.vy>4?0.09:0;
+    const gd=Math.max(0,GROUND_Y-(duck.y+DUCK_H/2));
+    gCtx.save();gCtx.globalAlpha=Math.max(0,.22-gd*.002);gCtx.fillStyle='#000';
+    gCtx.beginPath();gCtx.ellipse(DUCK_X,GROUND_Y+5,Math.max(10,DUCK_W/2.6-gd*.3),6,0,0,Math.PI*2);gCtx.fill();gCtx.restore();
+    gCtx.save();gCtx.translate(DUCK_X,duck.y+bob);gCtx.rotate(lean);
+    if(duck.hurt>0&&Math.floor(duck.hurt/6)%2)gCtx.globalAlpha=.35;
+    gdi('duck'+gameSkin,-DUCK_W/2,-DUCK_H/2,DUCK_W,DUCK_H);gCtx.restore();
+  }
+  function drawHUD(){
+    const li=IMG.logo;if(li&&li.naturalWidth){const lw=190,lh=lw*li.naturalHeight/li.naturalWidth;gCtx.drawImage(li,GW/2-lw/2,PY+6,lw,lh);}
+    gCtx.save();gCtx.font=`bold 22px ${PIXEL}`;gCtx.fillStyle='#1a1a1a';gCtx.textAlign='right';
+    gCtx.fillText(String(score).padStart(5,'0'),PX+PW-14,PY+36);
+    const cw=21,ch=13,cgap=3,barX=PX+PW-14-ENERGY_MAX*(cw+cgap)+cgap,barY=PY+PH-30;
+    gCtx.fillStyle='rgba(255,255,255,.7)';gCtx.font=`7px ${PIXEL}`;gCtx.textAlign='right';
+    gCtx.fillText('ENERGY',PX+PW-14,barY-5);
+    for(let i=0;i<ENERGY_MAX;i++){
+      const cx=barX+i*(cw+cgap);
+      gCtx.shadowColor=i<energy?'rgba(255,200,0,.7)':'none';gCtx.shadowBlur=i<energy?6:0;
+      gCtx.fillStyle=i<energy?'#FFD700':'rgba(255,255,255,.22)';
+      grr(cx,barY,cw,ch,3);gCtx.fill();
+      if(i<energy){gCtx.shadowBlur=0;gCtx.fillStyle='rgba(255,255,255,.30)';gCtx.fillRect(cx+2,barY+2,cw-4,4);}
+    }
+    gCtx.restore();
+  }
+  function drawGameOver(){
+    gCtx.fillStyle='rgba(0,0,0,.48)';gCtx.fillRect(PX,PY,PW,PH);
+    const pw=580,ph=330,px2=GW/2-290,py2=GH/2-165;
+    gCtx.save();gCtx.fillStyle='#F2C19E';gCtx.shadowColor='rgba(0,0,0,.45)';gCtx.shadowBlur=28;
+    grr(px2,py2,pw,ph,24);gCtx.fill();gCtx.textAlign='center';
+    gCtx.fillStyle='#222';gCtx.font=`26px ${PIXEL}`;gCtx.fillText('GAME OVER',GW/2,py2+72);
+    gCtx.fillStyle='#555';gCtx.font=`11px ${PIXEL}`;gCtx.fillText('TU PUNTUACIÓN:',GW/2,py2+118);
+    gCtx.fillStyle='#E91E8C';gCtx.font=`bold 52px ${PIXEL}`;gCtx.fillText(score,GW/2,py2+190);
+    if(score>0&&score>=best){gCtx.fillStyle='#F5A623';gCtx.font=`10px ${PIXEL}`;gCtx.fillText('!! NUEVO RECORD !!',GW/2,py2+220);}
+    else if(best>0){gCtx.fillStyle='#aaa';gCtx.font=`9px ${PIXEL}`;gCtx.fillText('Record: '+best,GW/2,py2+220);}
+    gCtx.restore();
+    const bbw=420,bbh=52,bbx=GW/2-210,bby=py2+ph-72;
+    gCtx.save();gCtx.fillStyle='#1a1a1a';gCtx.shadowColor='rgba(0,0,0,.4)';gCtx.shadowBlur=10;
+    grr(bbx,bby,bbw,bbh,26);gCtx.fill();
+    gCtx.font=`9px ${PIXEL}`;gCtx.fillStyle='white';gCtx.shadowBlur=0;
+    gCtx.textAlign='left';gCtx.fillText('PULSA AL PATO',bbx+18,bby+31);
+    gCtx.textAlign='right';gCtx.fillText('PARA SEGUIR',bbx+bbw-18,bby+31);
+    gdi('duck'+gameSkin,GW/2-18,bby+4,36,42);gCtx.restore();
+  }
+  function clipPanel(){grr(PX,PY,PW,PH,PR);gCtx.clip();}
+  function strokePanel(){gCtx.save();gCtx.strokeStyle='rgba(255,255,255,.85)';gCtx.lineWidth=3;grr(PX,PY,PW,PH,PR);gCtx.stroke();gCtx.restore();}
+
+  function gameLoop(){
+    if(!gOv.classList.contains('open'))return;
+    if(gameActive)update();
+    gCtx.clearRect(0,0,GW,GH);drawOuterFrame();
+    gCtx.save();clipPanel();drawScene(bgOff);drawObjects();drawParticles();drawDuck();drawHUD();gCtx.restore();
+    strokePanel();if(!gameActive)drawGameOver();
+    requestAnimationFrame(gameLoop);
+  }
+  function gameTap(){
+    if(!gameActive){closeGame();return;}
+    if(duck.jumps<2){duck.vy=JUMP_V;duck.jumps++;}
+  }
+  gEl.addEventListener('click',()=>gameTap());
+  gEl.addEventListener('touchstart',e=>{e.preventDefault();gameTap();},{passive:false});
+  document.addEventListener('keydown',e=>{
+    if(e.code==='Space'&&gOv.classList.contains('open')){e.preventDefault();gameTap();}
+    if(e.code==='Escape'){closeGame();closeSkin();}
+  });
+
+  // ── RESIZE ─────────────────────────────────────────────────────────
+  function resizeCanvas(el){
+    const r=Math.min(window.innerWidth*.95/el.width, window.innerHeight*.95/el.height);
+    el.style.width=Math.round(el.width*r)+'px'; el.style.height=Math.round(el.height*r)+'px';
+  }
+  function onResize(){ resizeLeft(); resizeRight(); resizeCanvas(skEl); resizeCanvas(gEl); }
+  window.addEventListener('resize',onResize);
+
+  // ── OPEN / CLOSE ────────────────────────────────────────────────────
+  function openGame(sk){
+    closeSkin(); resetGame(sk); gameActive=true;
+    gOv.classList.add('open'); resizeCanvas(gEl); gameLoop();
+  }
+  function closeGame(){
+    gameActive=false; gOv.classList.remove('open');
+    chosenSkin=gameSkin; bSkin=gameSkin; openSkin();
+  }
+  document.getElementById('game-xbtn').addEventListener('click',closeGame);
+  document.getElementById('game-xbtn').addEventListener('touchstart',e=>{e.preventDefault();closeGame();},{passive:false});
+
+  // ── MAIN LOOP ───────────────────────────────────────────────────────
+  function mainLoop(){
+    drawLeft(); drawRight(); drawBanner();
+    requestAnimationFrame(mainLoop);
+  }
+
+  resizeLeft(); resizeRight(); resizeCanvas(skEl); resizeCanvas(gEl);
+  mainLoop();
+
+})();
+</script>
+</body>
+</html>
